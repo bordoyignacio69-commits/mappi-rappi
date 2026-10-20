@@ -25,7 +25,7 @@ const GEO = {
     if (Math.hypot(dx, dy) < 0.05) { dx = (r.x - 50); dy = (50 - r.y); }
     // pequeño giro estable por restaurante para que no queden en línea recta
     const h = [...rid].reduce((a, ch) => a + ch.charCodeAt(0), 0);
-    const ang = Math.atan2(dy, dx) + ((h % 41) - 20) * Math.PI / 180;
+    const ang = Math.atan2(dy, dx) + (((h * 37) % 81) - 40) * Math.PI / 180;
     const d = r.dist_km;
     return (this._c[rid] = [la0 + Math.sin(ang) * d / ky, lo0 + Math.cos(ang) * d / kx]);
   },
@@ -62,7 +62,7 @@ const MapView = {
     this.views = {};
     this.onEngineChange?.();
   },
-  label() { return { google: 'Google Maps', leaflet: '© OpenStreetMap · CARTO', svg: 'Mapa ilustrado (sin conexión)', loading: 'Cargando mapa…' }[this.engine]; },
+  label() { return { google: 'Google Maps', leaflet: '© OpenStreetMap', svg: 'Mapa ilustrado (sin conexión)', loading: 'Cargando mapa…' }[this.engine]; },
 
   /* Muestra el mapa "key" dentro de su hueco. opts:
      items: [{ id, html, sel }]   marcadores
@@ -124,9 +124,9 @@ const MapView = {
       v.map = L.map(v.el, { zoomControl: false, attributionControl: true, dragging: inter, scrollWheelZoom: inter, touchZoom: inter, doubleClickZoom: inter, boxZoom: false, keyboard: inter, tap: inter })
         .setView(GEO.me(), 15);
       v.map.attributionControl.setPrefix(false);
-      // Teselas CARTO "Voyager": base de OpenStreetMap con estilo limpio, parecido al de las apps de delivery
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19, subdomains: 'abcd', attribution: '© OpenStreetMap · © CARTO',
+      // Teselas estándar de OpenStreetMap (gratis, con atribución; pensadas para uso liviano como un prototipo)
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19, attribution: '© OpenStreetMap',
       }).addTo(v.map);
     },
     addMe(v, ll) {
