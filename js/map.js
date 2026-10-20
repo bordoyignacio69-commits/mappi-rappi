@@ -75,8 +75,10 @@ const MapView = {
     const slot = document.querySelector(`[data-map="${key}"]`);
     if (!slot || this.engine === 'svg' || this.engine === 'loading') return false;
     let v = this.views[key];
-    if (!v) v = this.views[key] = this._create(key, opts);
+    // El mapa se crea ya dentro de su hueco: Leaflet necesita medir el contenedor al nacer
+    if (!v) v = this.views[key] = this._create(key, opts, slot);
     if (v.el.parentElement !== slot) slot.appendChild(v.el);
+    v.el.style.position = 'absolute';
     this[this.engine].resize(v);
     this._markers(v, opts);
     if (v.fitKey !== opts.fitKey) {
@@ -93,9 +95,10 @@ const MapView = {
   },
   recenter(key) { const v = this.views[key]; if (v) this[this.engine].fit(v, [GEO.me()], 16, true); },
 
-  _create(key, opts) {
+  _create(key, opts, slot) {
     const el = document.createElement('div');
     el.className = 'map-canvas';
+    slot.appendChild(el);
     const v = { el, markers: {}, key };
     this[this.engine].create(v, opts);
     // marcador "Tú estás aquí"
